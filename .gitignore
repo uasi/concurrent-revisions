@@ -2,6 +2,7 @@ blib/
 inc/
 *.bak
 *.old
+*.tar.gz
 MYMETA.*
 Makefile
 pm_to_blib
