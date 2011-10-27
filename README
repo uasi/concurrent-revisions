@@ -1,0 +1,64 @@
+NAME
+    ConcurrentRev - an implementation of Concurrent Revisions
+
+INSTALLATION
+    To install this module, run the following commands:
+
+        perl Makefile.PL
+        make
+        make test
+        make install
+
+SYNOPSIS
+        use ConcurrentRev;
+
+        my $var = ConcurrentRev::Versioned->new;
+        $var->value('main');
+
+        # Here $var->value eq 'main'
+
+        my $fork = rfork {
+            $var->value('fork');
+        };
+
+        # Still $var->value eq 'main'
+
+        rjoin $fork;
+
+        # Now $var->value eq 'fork'
+
+    or
+
+        use ConcurrentRev;
+        use ConcurrentRev::Attribute;
+
+        my $var : Versioned = 'main';
+
+        my $fork = rfork {
+            $var = 'fork';
+        };
+
+        rjoin $fork;
+
+        say $var;
+
+    `Coro::*' functions such as `Coro::cede' can be used in the `rfork'
+    block.
+
+DESCRIPTION
+    (TBD)
+
+EXPORTS (title?)
+  rfork (&;@)
+  rjoin ($)
+AUTHOR
+    Tomoki Aonuma <uasi@cpan.org>
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    Revisions - A programming model for parallelizing conflicting tasks
+    http://research.microsoft.com/en-us/projects/revisions/
+

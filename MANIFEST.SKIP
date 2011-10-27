@@ -1,0 +1,11 @@
+\.git/
+^blib/
+~$
+\.gitignore$
+\.gz$
+\.old$
+\.shipit$
+^MANIFEST\.
+^MYMETA\.
+^Makefile$
+^pm_to_blib$
