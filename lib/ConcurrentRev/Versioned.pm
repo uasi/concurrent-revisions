@@ -4,11 +4,13 @@ use warnings;
 use ConcurrentRev::Revision;
 use Mo qw(build);
 
+has merger => ();
 has versions => ();
 
 sub BUILD {
     my ($self) = @_;
     $self->versions({});
+    $self->merger(\&_default_merger);
 }
 
 sub prune {
@@ -34,7 +36,12 @@ sub merge {
     }
 
     if ($seg == $join_seg) {
-        $self->_set($main_rev, $self->versions->{$join_seg->version});
+        my $merged = $self->merger->(
+            $self->_get($main_rev),
+            $self->_get($join_rev),
+            $self->_get($join_rev->root_seg),
+        );
+        $self->_set($main_rev, $merged);
     }
 }
 
@@ -45,9 +52,11 @@ sub value {
 }
 
 sub _get {
-    my ($self, $rev) = @_;
+    my ($self, $rev_or_seg) = @_;
 
-    my $seg = $rev->current_seg;
+    my $seg = $rev_or_seg->isa('ConcurrentRev::Revision')
+            ? $rev_or_seg->current_seg
+            : $rev_or_seg;
     until (exists $self->versions->{$seg->version}) {
         $seg = $seg->parent;
     }
@@ -55,13 +64,20 @@ sub _get {
 }
 
 sub _set {
-    my ($self, $rev, $value) = @_;
+    my ($self, $rev_or_seg, $value) = @_;
 
-    my $seg = $rev->current_seg;
+    my $seg = $rev_or_seg->isa('ConcurrentRev::Revision')
+            ? $rev_or_seg->current_seg
+            : $rev_or_seg;
     unless (exists $self->versions->{$seg->version}) {
         push @{$seg->written}, $self;
     }
     $self->versions->{$seg->version} = $value;
+}
+
+sub _default_merger {
+    my ($main, $fork, $root) = @_;
+    $fork;
 }
 
 1;

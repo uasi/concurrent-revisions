@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use ConcurrentRev;
 use ConcurrentRev::Attribute;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Test::Fatal qw(dies_ok lives_ok);
 
 {
@@ -30,4 +30,13 @@ use Test::Fatal qw(dies_ok lives_ok);
 
     rjoin $r;
     is $v, 'fork', '';
+}
+
+{
+    my $v : Versioned(sub { $_[2] }) = 'root';
+    my $r = rfork { $v = 'fork' };
+    $v = 'main';
+
+    rjoin $r;
+    is $v, 'root', '';
 }

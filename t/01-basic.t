@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use ConcurrentRev;
-use Test::More tests => 21;
+use Test::More tests => 25;
 use Test::Fatal qw(dies_ok lives_ok);
 
 {
@@ -103,4 +103,25 @@ use Test::Fatal qw(dies_ok lives_ok);
         todo_skip 'wrong rjoin does not die immediately but cause a nasty error later', 1;
         dies_ok { rjoin $inner; } 'cannot join inner fork before joining outer fork';
     }
+}
+
+# Merger
+{
+    my $root_merger = sub {
+        my ($main, $fork, $root) = @_;
+        is $main, 'main', 'merger arg[0]';
+        is $fork, 'fork', 'merger arg[1]';
+        is $root, 'root', 'merger arg[2]';
+        $root;
+    };
+
+    my $v = ConcurrentRev::Versioned->new;
+    $v->merger($root_merger);
+
+    $v->value('root');
+    my $r = rfork { $v->value('fork') };
+    $v->value('main');
+
+    rjoin $r;
+    is $v->value, 'root', '';
 }

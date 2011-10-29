@@ -3,9 +3,22 @@ use strict;
 use warnings;
 use parent qw(ConcurrentRev::Versioned Tie::Scalar);
 
-sub TIESCALAR { shift->new }
-sub FETCH     { shift->value }
-sub STORE     { shift->value(@_) }
+sub TIESCALAR {
+    my ($class, $merger) = @_;
+    my $self = $class->new;
+    $self->merger($merger) if $merger;
+    $self;
+}
+
+sub FETCH {
+    my ($self) = @_;
+    $self->value;
+}
+
+sub STORE {
+    my ($self, $value) = @_;
+    $self->value($value);
+}
 
 1;
 
