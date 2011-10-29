@@ -29,10 +29,10 @@ SYNOPSIS
 
     or
 
-        use ConcurrentRev;
-        use ConcurrentRev::Attribute;
+        use ConcurrentRev qw(rfork rjoin versioned);
 
-        my $var : Versioned = 'main';
+        versioned my $var;
+        $var = 'main';
 
         my $fork = rfork {
             $var = 'fork';
@@ -46,9 +46,10 @@ SYNOPSIS
     block.
 
 DESCRIPTION
-EXPORTS
-  rfork (&;@)
-  rjoin ($)
+FUNCTIONS
+  rfork
+  rjoin
+  versioned
 AUTHOR
     Tomoki Aonuma <uasi@cpan.org>
 

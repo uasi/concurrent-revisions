@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use parent 'Exporter';
 use ConcurrentRev::Versioned;
+use ConcurrentRev::Versioned::Scalar;
 use ConcurrentRev::Segment;
 use ConcurrentRev::Revision;
 
@@ -18,13 +19,21 @@ INIT {
 }
 
 our @EXPORT = qw(rfork rjoin);
+our @EXPORT_OK = qw(versioned);
+our %EXPORT_TAGS = (
+    all => [@EXPORT, @EXPORT_OK]
+);
 
-sub rfork(&;@) {
+sub rfork (&;@) {
     $ConcurrentRev::Revision::current->fork(@_);
 }
 
-sub rjoin($) {
+sub rjoin ($) {
     $ConcurrentRev::Revision::current->join(@_);
+}
+
+sub versioned {
+    tie $_[0], 'ConcurrentRev::Versioned::Scalar', ($_[1] || ());
 }
 
 1;
@@ -69,10 +78,10 @@ To install this module, run the following commands:
 
 or
 
-    use ConcurrentRev;
-    use ConcurrentRev::Attribute;
+    use ConcurrentRev qw(rfork rjoin versioned);
 
-    my $var : Versioned = 'main';
+    versioned my $var;
+    $var = 'main';
 
     my $fork = rfork {
         $var = 'fork';
@@ -86,11 +95,13 @@ C<Coro::*> functions such as C<Coro::cede> can be used in the C<rfork> block.
 
 =head1 DESCRIPTION
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-=head2 rfork (&;@)
+=head2 rfork
 
-=head2 rjoin ($)
+=head2 rjoin
+
+=head2 versioned
 
 =head1 AUTHOR
 
