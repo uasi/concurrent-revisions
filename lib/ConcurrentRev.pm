@@ -86,7 +86,7 @@ C<Coro::*> functions such as C<Coro::cede> can be used in the C<rfork> block.
 
 =head1 DESCRIPTION
 
-=head1 EXPORTS (title?)
+=head1 EXPORTS
 
 =head2 rfork (&;@)
 
@@ -94,7 +94,7 @@ C<Coro::*> functions such as C<Coro::cede> can be used in the C<rfork> block.
 
 =head1 AUTHOR
 
-Tomoki Aonuma E<lt>uasi@99cm.orgE<gt>
+Tomoki Aonuma E<lt>uasi@cpan.orgE<gt>
 
 =head1 LICENSE
 
